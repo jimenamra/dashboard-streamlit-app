@@ -58,10 +58,22 @@ def extract_team_names(df, column_name='data'):
 
 
 def expand_positions(lineups_df):
+    """
+    Extrae y expande la información de posiciones desde la columna 'data' en el DataFrame de alineaciones.
+    """
+    if "data" not in lineups_df.columns:
+        return pd.DataFrame()  # Retorna un DataFrame vacío para evitar errores
+
     expanded_rows = []
     for _, row in lineups_df.iterrows():
-        team_name = row["team_name"]
-        positions = row["positions"]  # Supone que esto ya es una lista de diccionarios
+        team_name = row.get("team_name")
+        data = row.get("data")
+
+        # Extraer 'positions' de la columna 'data'
+        positions = data.get("positions") if isinstance(data, dict) else []
+
+        if not isinstance(positions, list):
+            continue
 
         # Expandir cada posición en una nueva fila
         for position in positions:

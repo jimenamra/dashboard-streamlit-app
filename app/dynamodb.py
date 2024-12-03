@@ -34,21 +34,19 @@ def fetch_data(table_name):
         response = table.scan()
         items.extend(response.get('Items', []))
         
-        # Manejar paginación
         while 'LastEvaluatedKey' in response:
             response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
             items.extend(response.get('Items', []))
         
-        # Verificar y procesar la columna 'data'
         for item in items:
             if "data" in item:
                 if isinstance(item["data"], str):
                     try:
-                        item["data"] = json.loads(item["data"])  # Decodificar JSON si es una cadena
+                        item["data"] = json.loads(item["data"])  
                     except json.JSONDecodeError:
                         st.warning(f"No se pudo decodificar 'data' para el item: {item}")
                 elif isinstance(item["data"], dict):
-                    item["data"] = item["data"]  # Si ya es un diccionario, mantenerlo
+                    item["data"] = item["data"]  
         
         return items
     
@@ -58,4 +56,4 @@ def fetch_data(table_name):
 
 
 matches_data = fetch_data("matches")
-print(matches_data[:1])  # Muestra las primeras 5 filas
+print(matches_data[:1])  

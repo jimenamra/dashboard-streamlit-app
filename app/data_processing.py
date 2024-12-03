@@ -10,12 +10,10 @@ def extract_dynamodb_data(raw_data):
     expanded_data = []
 
     for record in raw_data:
-        # Verificar si 'data' existe en el registro y es una lista
         if "data" in record and isinstance(record["data"], list):
             for entry in record["data"]:
                 expanded_record = {}
                 try:
-                    # Expandir los campos del diccionario dentro de 'data'
                     for key, value in entry.items():
                         if isinstance(value, dict):
                             if "S" in value:
@@ -29,8 +27,7 @@ def extract_dynamodb_data(raw_data):
                             else:
                                 expanded_record[key] = "No existe"
                         else:
-                            expanded_record[key] = value  # Para valores simples
-                    # Incorporar otras columnas del registro fuera de 'data'
+                            expanded_record[key] = value  
                     for k, v in record.items():
                         if k != "data":
                             expanded_record[k] = v
@@ -38,13 +35,10 @@ def extract_dynamodb_data(raw_data):
                     expanded_record["error"] = f"Error al procesar entrada: {e}"
                 expanded_data.append(expanded_record)
         else:
-            # Si 'data' no existe o no es una lista, agregar el registro como está
             expanded_data.append(record)
 
-    # Convertir los datos expandidos en DataFrame
     df = pd.DataFrame(expanded_data)
 
-    # Asignar valores por defecto a columnas faltantes
     for col in df.columns:
         if df[col].dtype == object:
             df[col] = df[col].fillna("No existe")  # Texto
